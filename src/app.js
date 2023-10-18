@@ -19,7 +19,6 @@ app.put('/api/posts/:post_id/edit', verifyToken, editPost);
 app.delete('/api/posts/:post_id/delete', verifyToken, deletePost);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-{
-    console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

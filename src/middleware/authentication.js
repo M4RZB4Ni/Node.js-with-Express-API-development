@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { hashPassword } = require('../utils/passwordUtils');
 
 const secretKey = 'your-secret-key';
 const verifyToken = (req, res, next) =>

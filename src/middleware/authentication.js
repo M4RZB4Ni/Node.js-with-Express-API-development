@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'your-secret-key';
+const secretKey = 'your-secret-key';ya
 const verifyToken = (req, res, next) =>
 {
     // Extract the token from the request headers

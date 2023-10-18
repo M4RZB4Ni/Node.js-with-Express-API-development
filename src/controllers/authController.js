@@ -1,5 +1,3 @@
-
-const axios = require('axios');
 const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 const { hashPassword } = require('../utils/hashHelper');
 
@@ -16,22 +14,18 @@ const registerUser = async (req, res) =>
             return res.status(400).json({ success: false, message: 'Please provide username, email, and password.' });
         }
 
-        // Hash the password (you should use a secure hashing algorithm)
+        // Hash the password
         const hashedPassword = await hashPassword(password);
 
         // GraphQL mutation to create a new user
         const createUserMutation = `
-      mutation InsertUser($username: String, $password: String, $email: String) {
-        insert_User(objects: {username: $username, password: $password, email: $email}) {
-          affected_rows
-          returning {
+        mutation CreateUser($username: String!, $email: String!, $password: String!) {
+          insert_users_one(object: { username: ${username}, email: ${email}, password: ${password} }) {
             user_id
             username
-            password
             email
           }
         }
-      }
       `;
 
         // Variables for the GraphQL mutation
@@ -56,6 +50,7 @@ const registerUser = async (req, res) =>
 };
 
 
+
 const loginUser = async (req, res) =>
 {
     try
@@ -72,7 +67,7 @@ const loginUser = async (req, res) =>
         // GraphQL query to fetch the user's hashed password based on the provided email
         const getUserQuery = `
         query GetUser($email: String!) {
-          users(where: { email: { _eq: $email } }) {
+          users(where: { email: { _eq: ${email} } }) {
             user_id
             password
           }

@@ -1,0 +1,25 @@
+{
+  "name": "radintest",
+  "version": "0.0.1",
+  "description": "Test app for RadinStudio as Back-end developer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M4RZB4Ni/Nodejs_postgres.git"
+  },
+  "author": "Hamidreza Marzbani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/M4RZB4Ni/Nodejs_postgres/issues"
+  },
+  "homepage": "https://github.com/M4RZB4Ni/Nodejs_postgres#readme",
+  "dependencies": {
+    "eslint": "^8.51.0",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3"
+  }
+}

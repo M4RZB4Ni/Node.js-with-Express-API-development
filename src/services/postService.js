@@ -77,7 +77,6 @@ async function updatePostService(post_id, user_id, newTitle, newContent)
           }
       }
     `;
-    console.log(`mutationUpdate ${updateQuery}`);
     // Variables for the GraphQL mutation
     const variables = {
         post_id,

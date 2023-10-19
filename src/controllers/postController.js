@@ -101,7 +101,7 @@ const editPost = async (req, res) =>
 
 
     // Check if required fields are provided
-    if (!post_id || !title || !content)
+    if (!post_id)
     {
       return res.status(400).json({ success: false, message: 'Please provide post_id, title, and content.' });
     }

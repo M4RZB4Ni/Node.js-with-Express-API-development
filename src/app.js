@@ -16,7 +16,7 @@ app.use(verifyToken);
 
 // Blog post routes (protected with token verification)
 app.post('/api/posts/create', verifyToken, createPost);
-app.get('/api/posts/:user_id', verifyToken, getUserPosts);
+app.get('/api/posts/getAll', verifyToken, getUserPosts);
 app.put('/api/posts/:post_id/edit', verifyToken, editPost);
 app.delete('/api/posts/:post_id/delete', verifyToken, deletePost);
 

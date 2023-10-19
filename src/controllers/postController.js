@@ -1,6 +1,6 @@
 const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 const { verifyToken } = require('../middleware/authentication');
-const { createPostService } = require('../services/postService');
+const { createPostService, getUserPostsService } = require('../services/postService');
 
 const createPost = async (req, res) =>
 {
@@ -23,7 +23,7 @@ const createPost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', postCreationResult.errors);
-      return res.status(500).json({ success: false, message: postCreationResult.error });
+      return res.status(500).json({ success: false, message: postCreationResult.errors });
     }
 
     if (postCreationResult.data)
@@ -50,39 +50,33 @@ const getUserPosts = async (req, res) =>
 {
   try
   {
-    // Verify the user's token and extract user_id
-    const verificationResult = verifyToken(req, res);
-
-    if (!verificationResult.success)
-    {
-      // Token verification failed
-      return res.status(401).json({ success: false, message: verificationResult.message });
-    }
 
     // Extracted user_id from token
     const { user_id } = req.user;
 
-    // GraphQL query to fetch posts for a specific user
-    const getUserPostsQuery = `
-        query GetUserPosts($user_id: uuid!) {
-          posts(where: { user_id: { _eq: ${user_id} } }) {
-            post_id
-            title
-            content
-          }
-        }
-      `;
+    const getPostsResult = await getUserPostsService(user_id);
 
-    // Variables for the GraphQL query
-    const variables = {
-      user_id
-    };
+    if (getPostsResult.errors)
+    {
+      // Handle GraphQL errors
+      return res.status(500).json({ success: false, message: getPostsResult.errors });
+    }
 
-    // Make the GraphQL request to fetch the user's posts
-    const response = await makeGraphQLRequest(getUserPostsQuery, variables);
+    if (getPostsResult.data)
+    {
 
-    // Extract the posts from the response
-    const userPosts = response.data.posts;
+      const rawPosts = getPostsResult.data.blog_post;
+      const posts = [];
+      rawPosts.forEach((post) =>
+      {
+        posts.push({ title: post.title, content: post.content, id: post.post_id, lastUpdateDate: post.updated_at });
+      });
+      const response = {
+        success: true,
+        posts: posts,
+      };
+      return res.json(response);
+    }
 
     res.json({ success: true, userPosts });
   } catch (error)

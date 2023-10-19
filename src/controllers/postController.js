@@ -1,6 +1,6 @@
 const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 const { verifyToken } = require('../middleware/authentication');
-const { createPostService, getUserPostsService } = require('../services/postService');
+const { createPostService, getUserPostsService, updatePostService } = require('../services/postService');
 
 const createPost = async (req, res) =>
 {
@@ -78,7 +78,7 @@ const getUserPosts = async (req, res) =>
       return res.json(response);
     }
 
-    res.json({ success: true, userPosts });
+    res.json({ success: false });
   } catch (error)
   {
     console.error('Error fetching user posts:', error);
@@ -90,20 +90,15 @@ const editPost = async (req, res) =>
 {
   try
   {
-    // Verify the user's token and extract user_id
-    const verificationResult = verifyToken(req, res);
-
-    if (!verificationResult.success)
-    {
-      // Token verification failed
-      return res.status(401).json({ success: false, message: verificationResult.message });
-    }
 
     // Extracted user_id from token
     const { user_id } = req.user;
 
     // Extract post data from request body
-    const { post_id, title, content } = req.body;
+    const { title, content } = req.body;
+    const post_id = req.params.post_id;
+
+
 
     // Check if required fields are provided
     if (!post_id || !title || !content)
@@ -111,32 +106,20 @@ const editPost = async (req, res) =>
       return res.status(400).json({ success: false, message: 'Please provide post_id, title, and content.' });
     }
 
-    // GraphQL mutation to update an existing post
-    const editPostMutation = `
-        mutation EditPost($post_id: uuid!, $user_id: uuid!, $title: String!, $content: String!) {
-          update_posts_by_pk(pk_columns: { post_id: ${post_id}, user_id: ${user_id} }, _set: { title: ${title}, content: ${content} }) {
-            post_id
-            title
-            content
-          }
-        }
-      `;
+    const result = await updatePostService(post_id, user_id, title, content);
 
-    // Variables for the GraphQL mutation
-    const variables = {
-      post_id,
-      user_id,
-      title,
-      content
-    };
+    if (result.errors)
+    {
+      // Handle GraphQL errors
+      console.error('GraphQL errors:', result.errors);
+      return res.status(500).json({ success: false, message: result.errors });
+    }
 
-    // Make the GraphQL request to edit the post
-    const response = await makeGraphQLRequest(editPostMutation, variables);
+    if (result.data)
+    {
+      return res.status(200).json({ success: true, message: result.data });
+    }
 
-    // Extract the edited post information from the response
-    const { post_id: editedPostId, title: editedTitle, content: editedContent } = response.data.update_posts_by_pk;
-
-    res.json({ success: true, post_id: editedPostId, title: editedTitle, content: editedContent });
   } catch (error)
   {
     console.error('Error editing post:', error);
@@ -148,14 +131,7 @@ const deletePost = async (req, res) =>
 {
   try
   {
-    // Verify the user's token and extract user_id
-    const verificationResult = verifyToken(req, res);
 
-    if (!verificationResult.success)
-    {
-      // Token verification failed
-      return res.status(401).json({ success: false, message: verificationResult.message });
-    }
 
     // Extracted user_id from token
     const { user_id } = req.user;

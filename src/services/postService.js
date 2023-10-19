@@ -1,4 +1,5 @@
 
+const { json } = require('body-parser');
 const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 
 
@@ -37,6 +38,7 @@ async function getUserPostsService(user_id)
           content
           title
           updated_at
+          post_id
         }
       }    
     `;
@@ -49,7 +51,46 @@ async function getUserPostsService(user_id)
     return await makeGraphQLRequest(getPostsQuery, 'GetUserPosts', variables);
 }
 
+
+async function updatePostService(post_id, user_id, newTitle, newContent)
+{
+    const updateQuery = {};
+
+
+    if (newTitle !== undefined)
+    {
+        Object.assign(updateQuery, { title: newTitle });
+    }
+
+    if (newContent !== undefined)
+    {
+        Object.assign(updateQuery, { content: newContent });
+    }
+
+    // GraphQL mutation to update an existing post
+    const editPostMutation = `
+      mutation UpdatePost($post_id: uuid!, $user_id: uuid!,$updateQuery: blog_post_set_input) {
+        update_blog_post_by_pk(pk_columns: {post_id: $post_id, user_id: $user_id}, _set: $updateQuery) {
+            title
+            content
+            updated_at
+          }
+      }
+    `;
+    console.log(`mutationUpdate ${updateQuery}`);
+    // Variables for the GraphQL mutation
+    const variables = {
+        post_id,
+        user_id,
+        updateQuery
+    };
+
+    // Make the GraphQL request to edit the post
+    return await makeGraphQLRequest(editPostMutation, 'UpdatePost', variables);
+}
+
 module.exports = {
     createPostService,
-    getUserPostsService
+    getUserPostsService,
+    updatePostService
 };

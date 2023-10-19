@@ -6,10 +6,10 @@ const registerUser = async (req, res) =>
     try
     {
         // Extract username, email, and password from request body
-        const { username, email, password } = req.body;
+        const { userName, userMail, password } = req.body;
 
         // Check if required fields are provided
-        if (!username || !email || !password)
+        if (!userName || !userMail || !password)
         {
             return res.status(400).json({ success: false, message: 'Please provide username, email, and password.' });
         }
@@ -18,30 +18,55 @@ const registerUser = async (req, res) =>
         const hashedPassword = await hashPassword(password);
 
         // GraphQL mutation to create a new user
-        const createUserMutation = `
-        mutation CreateUser($username: String!, $email: String!, $password: String!) {
-          insert_users_one(object: { username: ${username}, email: ${email}, password: ${password} }) {
-            user_id
-            username
-            email
+        const operationsDoc = `
+        mutation InsertUser($userName: String, $password: String, $userMail: String) {
+            insert_User(objects: {username: $userName, password: $password, email: $userMail}) {
+              affected_rows
+              returning {
+                user_id
+                username
+                password
+                email
+              }
+            }
           }
-        }
       `;
 
         // Variables for the GraphQL mutation
         const variables = {
-            username,
-            email,
+            userName,
+            userMail,
             password: hashedPassword // Store the hashed password
         };
 
         // Make the GraphQL request to create a new user
-        const response = await makeGraphQLRequest(createUserMutation, variables);
+        const { errors, data } = await makeGraphQLRequest(operationsDoc, 'InsertUser', variables);
 
         // Extract the user information from the response
-        const { user_id, username: responseUsername, email: responseEmail } = response.data.insert_users_one;
+        if (errors)
+        {
+            // Handle errors
+            console.error(errors);
+            res.status(500).json({ success: false, message: errors });
+        }
+        if (data.insert_User)
+        {
+            const returningData = data.insert_User.returning;
 
-        res.json({ success: true, user_id, username: responseUsername, email: responseEmail });
+            if (returningData && returningData.length > 0)
+            {
+                const firstUser = returningData[0];
+                const email = firstUser.email;
+                const password = firstUser.password;
+                const username = firstUser.username;
+                const user_id = firstUser.user_id;
+
+                res.json({ success: true, user_id, username: username, email: email });
+
+            }
+        }
+
+        res.json({ success: true, UserDefined:true });
     } catch (error)
     {
         console.error('Error registering user:', error);

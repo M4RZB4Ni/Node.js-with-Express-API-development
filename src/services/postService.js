@@ -88,8 +88,32 @@ async function updatePostService(post_id, user_id, newTitle, newContent)
     return await makeGraphQLRequest(editPostMutation, 'UpdatePost', variables);
 }
 
+
+async function deletePostByIdService(post_id,user_id)
+{
+    // GraphQL mutation to delete an existing post
+    const deletePostMutation = `
+        mutation DeletePost($post_id: uuid!, $user_id: uuid!) {
+          delete_blog_post_by_pk(post_id: $post_id, user_id: $user_id) {
+            post_id
+            title
+            content
+          }
+        }
+      `;
+
+    // Variables for the GraphQL mutation
+    const variables = {
+        post_id,
+        user_id
+    };
+
+    // Make the GraphQL request to delete the post
+    return await makeGraphQLRequest(deletePostMutation, 'DeletePost', variables);
+}
 module.exports = {
     createPostService,
     getUserPostsService,
-    updatePostService
+    updatePostService,
+    deletePostByIdService
 };

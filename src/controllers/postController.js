@@ -1,6 +1,6 @@
 const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 const { verifyToken } = require('../middleware/authentication');
-const { createPostService, getUserPostsService, updatePostService } = require('../services/postService');
+const { createPostService, getUserPostsService, updatePostService, deletePostByIdService } = require('../services/postService');
 
 const createPost = async (req, res) =>
 {
@@ -103,7 +103,7 @@ const editPost = async (req, res) =>
     // Check if required fields are provided
     if (!post_id)
     {
-      return res.status(400).json({ success: false, message: 'Please provide post_id, title, and content.' });
+      return res.status(400).json({ success: false, message: 'Please provide post_id' });
     }
 
     const result = await updatePostService(post_id, user_id, title, content);
@@ -137,38 +137,27 @@ const deletePost = async (req, res) =>
     const { user_id } = req.user;
 
     // Extract post_id from the request parameters
-    const { post_id } = req.params;
+    const post_id = req.params.post_id;
 
     // Check if post_id is provided
     if (!post_id)
     {
       return res.status(400).json({ success: false, message: 'Please provide post_id.' });
     }
+    const result = await deletePostByIdService(post_id, user_id);
 
-    // GraphQL mutation to delete an existing post
-    const deletePostMutation = `
-        mutation DeletePost($post_id: uuid!, $user_id: uuid!) {
-          delete_posts_by_pk(post_id: ${post_id}, user_id: ${user_id}) {
-            post_id
-            title
-            content
-          }
-        }
-      `;
+    if (result.errors)
+    {
+      // Handle GraphQL errors
+      console.error('GraphQL errors:', result.errors);
+      return res.status(500).json({ success: false, message: result.errors });
+    }
 
-    // Variables for the GraphQL mutation
-    const variables = {
-      post_id,
-      user_id
-    };
+    if (result.data)
+    {
+      return res.status(200).json({ success: true, message: result.data });
+    }
 
-    // Make the GraphQL request to delete the post
-    const response = await makeGraphQLRequest(deletePostMutation, variables);
-
-    // Extract the deleted post information from the response
-    const { post_id: deletedPostId, title: deletedTitle, content: deletedContent } = response.data.delete_posts_by_pk;
-
-    res.json({ success: true, post_id: deletedPostId, title: deletedTitle, content: deletedContent });
   } catch (error)
   {
     console.error('Error deleting post:', error);

@@ -83,7 +83,8 @@ const loginUser = async (req, res) =>
             if (passwordMatch)
             {
                 // Passwords match, generate a JWT token (you need to implement this function)
-                const token = generateToken(userLoginRespose.user_id); // Assuming you have a function to generate JWT tokens
+                console.log('');
+                const token = generateToken(userLoginRespose.data.User[0].user_id, email); // Assuming you have a function to generate JWT tokens
 
                 return res.json({ success: true, token });
             } else

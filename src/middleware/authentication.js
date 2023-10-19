@@ -22,6 +22,8 @@ const verifyToken = (req, res, next) =>
 
         // Save the decoded user information for further use in the request
         req.user = decoded;
+
+        // Call next to pass control to the next middleware or route handler
         next();
     });
 };
@@ -40,11 +42,7 @@ function generateToken(userId, email)
     return token;
 }
 
-// Example usage:
-const userLoginResponse = {
-    user_id: '12345', // Replace with the actual user ID
-    // Other user information if needed
-};
+
 
 module.exports = {
     verifyToken,

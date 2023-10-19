@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const secretKey = 'c8c3a8b1d1e04ef2a899e8e7a574f40555b62a371bd8f4e9b0a558d599de4fa5';
+
 const verifyToken = (req, res, next) =>
 {
     // Extract the token from the request headers
@@ -25,7 +26,27 @@ const verifyToken = (req, res, next) =>
     });
 };
 
+function generateToken(userId, email)
+{
+    // Payload contains user information that you want to include in the token
+    const payload = {
+        user_id: userId,
+        email: email
+    };
+
+    // Sign the token with your secret key and set an expiration time (e.g., 1 hour)
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+
+    return token;
+}
+
+// Example usage:
+const userLoginResponse = {
+    user_id: '12345', // Replace with the actual user ID
+    // Other user information if needed
+};
 
 module.exports = {
-    verifyToken
+    verifyToken,
+    generateToken
 };

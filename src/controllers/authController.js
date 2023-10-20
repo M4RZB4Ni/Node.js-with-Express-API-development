@@ -1,6 +1,4 @@
-const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 const { hashPassword, comparePassword } = require('../utils/hashHelper');
-
 const { createUser, loginUserQuery } = require('../services/userService');
 const { generateToken } = require('../middleware/authentication');
 const registerUser = async (req, res) =>

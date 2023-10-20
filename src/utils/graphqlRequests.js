@@ -1,4 +1,6 @@
 const axios = require('axios');
+
+
 const makeGraphQLRequest = async (query, operationName, variables) =>
 {
     try

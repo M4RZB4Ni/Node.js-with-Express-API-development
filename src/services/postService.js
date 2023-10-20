@@ -1,5 +1,4 @@
 
-const { json } = require('body-parser');
 const { makeGraphQLRequest } = require('../utils/graphqlRequests');
 
 async function createPostService(user_id, title, content)

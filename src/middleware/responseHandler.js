@@ -11,7 +11,16 @@ const errorHandler = (err, req, res, next) =>
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
 };
+const sendSuccessResponse = (res, data) =>
+{
+    return res.status(200).json({
+        success: true,
+        data,
+    });
+};
+
 
 module.exports = {
-    errorHandler
+    errorHandler,
+    sendSuccessResponse
 };

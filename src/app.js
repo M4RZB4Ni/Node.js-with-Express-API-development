@@ -4,7 +4,7 @@ const { verifyToken } = require('./middleware/authentication');
 const { verifyRegister, verifyLogin } = require('./middleware/validation');
 const { createPost, getUserPosts, editPost, deletePost } = require('./controllers/postController');
 const { registerUser, loginUser } = require('./controllers/authController');
-const { errorHandler } = require('./middleware/errorHandler');
+const { errorHandler, sendSuccessResponse } = require('./middleware/responseHandler');
 
 const app = express();
 app.use(bodyParser.json());
@@ -24,6 +24,7 @@ app.delete('/api/posts/:post_id/delete', verifyToken, deletePost);
 
 const PORT = process.env.PORT || 3000;
 app.use(errorHandler);
+app.use(sendSuccessResponse);
 
 app.listen(PORT, () =>
 {

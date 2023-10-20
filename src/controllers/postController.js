@@ -22,7 +22,7 @@ const createPost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', postCreationResult.errors);
-      next(new AppError(postCreationResult.errors, 500));
+      next(new AppError(postCreationResult.errors[0].message, 500));
 
     }
 
@@ -60,7 +60,7 @@ const getUserPosts = async (req, res) =>
     if (getPostsResult.errors)
     {
       // Handle GraphQL errors
-      next(new AppError(getPostsResult.errors, 500));
+      next(new AppError(getPostsResult.errors[0].message, 500));
 
     }
 
@@ -113,7 +113,7 @@ const editPost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', result.errors);
-      next(new AppError(result.errors, 500));
+      next(new AppError(result.errors[0].message, 500));
     }
 
     if (result.data)
@@ -151,7 +151,7 @@ const deletePost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', result.errors);
-      next(new AppError(result.errors, 500));
+      next(new AppError(result.errors[0].message, 500));
     }
 
     if (result.data)

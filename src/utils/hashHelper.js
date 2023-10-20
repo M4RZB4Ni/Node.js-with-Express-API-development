@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { AppError } = require('../utils/appError');
 
 const hashPassword = async (password) =>
 {
@@ -9,7 +10,7 @@ const hashPassword = async (password) =>
         return hashedPassword;
     } catch (error)
     {
-        throw new Error('Error hashing password');
+        throw new AppError('Error hashing password', 500);
     }
 };
 

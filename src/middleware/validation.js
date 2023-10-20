@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { AppError } = require('../utils/appError');
 
 const verifyRegister = async (req, res, next) =>
 {
@@ -23,10 +24,8 @@ const verifyRegister = async (req, res, next) =>
 
     }).catch((err) =>
     {
-        return res.status(400).json({
-            success: false,
-            message: err.details[0].message,
-        });
+        next(new AppError(err.details[0].message, 400));
+
     });
 };
 
@@ -48,10 +47,8 @@ const verifyLogin = async (req, res, next) =>
 
     }).catch((err) =>
     {
-        return res.status(400).json({
-            success: false,
-            message: err.details[0].message,
-        });
+        next(new AppError(err.details[0].message, 400));
+
     });
 
 

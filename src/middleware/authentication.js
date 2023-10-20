@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const { AppError } = require('../utils/appError');
 
 const secretKey = process.env.AUTH_SECRET_KEY;
 // const secretKey =
@@ -12,9 +13,7 @@ const verifyToken = (req, res, next) =>
 
   if (!authHeader)
   {
-    return res
-      .status(403)
-      .json({ success: false, message: "No token provided." });
+    next(new AppError("No token provided.", 403));
   }
 
   // Check if the header starts with "Bearer "
@@ -28,9 +27,8 @@ const verifyToken = (req, res, next) =>
     {
       if (err)
       {
-        return res
-          .status(401)
-          .json({ success: false, message: "Failed to authenticate token." });
+        next(new AppError("Failed to authenticate token.", 401));
+
       }
 
       // Save the decoded user information for further use in the request
@@ -39,10 +37,8 @@ const verifyToken = (req, res, next) =>
     });
   } else
   {
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid token format. It should start with "Bearer "',
-    });
+
+    next(new AppError('Invalid token format. It should start with "Bearer "', 401));
   }
 };
 

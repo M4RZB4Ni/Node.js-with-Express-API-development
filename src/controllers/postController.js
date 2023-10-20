@@ -1,5 +1,6 @@
 const { createPostService, getUserPostsService, updatePostService, deletePostByIdService } = require('../services/postService');
 const { sendEmailNotification } = require('../services/emailService');
+const { AppError } = require('../utils/appError');
 
 const createPost = async (req, res) =>
 {
@@ -12,7 +13,7 @@ const createPost = async (req, res) =>
 
     if (!title || !content)
     {
-      return res.status(400).json({ success: false, message: 'Please provide title and content.' });
+      next(new AppError('Please provide title and content.', 400));
     }
 
     const postCreationResult = await createPostService(user_id, title, content);
@@ -21,7 +22,8 @@ const createPost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', postCreationResult.errors);
-      return res.status(500).json({ success: false, message: postCreationResult.errors });
+      next(new AppError(postCreationResult.errors, 500));
+
     }
 
     if (postCreationResult.data)
@@ -34,14 +36,14 @@ const createPost = async (req, res) =>
         content: post.content,
       };
       sendEmailNotification(email, post.post_id);
-      return res.json(response);
+      return res.status(200).json(response);
     }
 
-    return res.json({ success: false });
+
   } catch (error)
   {
     console.error('Error creating post:', error);
-    res.status(500).json({ success: false, message: 'Error creating post.' });
+    next(new AppError('Error creating post.', 500));
   }
 };
 
@@ -58,7 +60,8 @@ const getUserPosts = async (req, res) =>
     if (getPostsResult.errors)
     {
       // Handle GraphQL errors
-      return res.status(500).json({ success: false, message: getPostsResult.errors });
+      next(new AppError(getPostsResult.errors, 500));
+
     }
 
     if (getPostsResult.data)
@@ -74,14 +77,13 @@ const getUserPosts = async (req, res) =>
         success: true,
         posts: posts,
       };
-      return res.json(response);
+      return res.status(200).json(response);
     }
 
-    res.json({ success: false });
   } catch (error)
   {
     console.error('Error fetching user posts:', error);
-    res.status(500).json({ success: false, message: 'Error fetching user posts.' });
+    next(new AppError('Error fetching user posts.', 500));
   }
 };
 
@@ -102,7 +104,7 @@ const editPost = async (req, res) =>
     // Check if required fields are provided
     if (!post_id)
     {
-      return res.status(400).json({ success: false, message: 'Please provide post_id' });
+      next(new AppError('Please provide post_id', 400));
     }
 
     const result = await updatePostService(post_id, user_id, title, content);
@@ -111,7 +113,7 @@ const editPost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', result.errors);
-      return res.status(500).json({ success: false, message: result.errors });
+      next(new AppError(result.errors, 500));
     }
 
     if (result.data)
@@ -122,7 +124,7 @@ const editPost = async (req, res) =>
   } catch (error)
   {
     console.error('Error editing post:', error);
-    res.status(500).json({ success: false, message: 'Error editing post.' });
+    next(new AppError('Error editing post.', 500));
   }
 };
 
@@ -141,7 +143,7 @@ const deletePost = async (req, res) =>
     // Check if post_id is provided
     if (!post_id)
     {
-      return res.status(400).json({ success: false, message: 'Please provide post_id.' });
+      next(new AppError('Please provide post_id.', 400));
     }
     const result = await deletePostByIdService(post_id, user_id);
 
@@ -149,7 +151,7 @@ const deletePost = async (req, res) =>
     {
       // Handle GraphQL errors
       console.error('GraphQL errors:', result.errors);
-      return res.status(500).json({ success: false, message: result.errors });
+      next(new AppError(result.errors, 500));
     }
 
     if (result.data)
@@ -160,7 +162,7 @@ const deletePost = async (req, res) =>
   } catch (error)
   {
     console.error('Error deleting post:', error);
-    res.status(500).json({ success: false, message: 'Error deleting post.' });
+    next(new AppError('Error deleting post.', 500));
   }
 };
 

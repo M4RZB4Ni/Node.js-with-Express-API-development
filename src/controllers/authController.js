@@ -1,6 +1,7 @@
 const { hashPassword, comparePassword } = require('../utils/hashHelper');
 const { createUser, loginUserQuery } = require('../services/userService');
 const { generateToken } = require('../middleware/authentication');
+const { AppError } = require('../utils/appError');
 
 const registerUser = async (req, res) =>
 {
@@ -10,7 +11,9 @@ const registerUser = async (req, res) =>
 
         if (!username || !email || !password)
         {
-            return res.status(400).json({ success: false, message: 'Please provide username, email, and password.' });
+            next(new AppError('Please provide username, email, and password.', 500));
+
+            // return res.status(400).json({ success: false, message: 'Please provide username, email, and password.' });
         }
 
         const hashedPassword = await hashPassword(password);
@@ -21,7 +24,7 @@ const registerUser = async (req, res) =>
         {
             // Handle GraphQL errors
             console.error('GraphQL errors:', userCreationResult.error);
-            return res.status(500).json({ success: false, message: userCreationResult.errors });
+            next(new AppError(userCreationResult.errors, 500));
         }
 
         if (userCreationResult.data)
@@ -40,7 +43,8 @@ const registerUser = async (req, res) =>
     } catch (error)
     {
         console.error('Error registering user:', error);
-        res.status(500).json({ success: false, message: 'Error registering user.' });
+        next(new AppError('Error registering user.', 500));
+
     }
 };
 
@@ -58,7 +62,8 @@ const loginUser = async (req, res) =>
         // Check if required fields are provided
         if (!email || !password)
         {
-            return res.status(400).json({ success: false, message: 'Please provide email and password.' });
+            next(new AppError('Please provide email and password.', 400));
+
         }
 
         const userLoginRespose = await loginUserQuery(email);
@@ -67,7 +72,9 @@ const loginUser = async (req, res) =>
         {
             // Handle GraphQL errors
             console.error('GraphQL errors:', userLoginRespose.error);
-            return res.status(500).json({ success: false, message: userLoginRespose.errors });
+            next(new AppError(userLoginRespose.errors, 500));
+
+
         }
 
         if (userLoginRespose.data)
@@ -88,7 +95,8 @@ const loginUser = async (req, res) =>
                 return res.json({ success: true, token });
             } else
             {
-                return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+                next(new AppError('Invalid email or password.', 401));
+
             }
 
         }
@@ -96,7 +104,7 @@ const loginUser = async (req, res) =>
     } catch (error)
     {
         console.error('Error logging in:', error);
-        res.status(500).json({ success: false, message: 'Error logging in.' });
+        next(new AppError('Error logging in.', 500));
     }
 };
 

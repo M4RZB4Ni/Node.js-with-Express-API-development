@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { AppError } = require('../utils/appError');
 
 
 const makeGraphQLRequest = async (query, operationName, variables) =>
@@ -21,7 +22,8 @@ const makeGraphQLRequest = async (query, operationName, variables) =>
     } catch (error)
     {
         console.error('Error making GraphQL request:', error);
-        throw new Error('Error making GraphQL request');
+        throw new AppError('Error making GraphQL request', 500);
+
     }
 };
 

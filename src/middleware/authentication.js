@@ -1,31 +1,43 @@
 const jwt = require("jsonwebtoken");
 
 const secretKey = process.env.AUTH_SECRET_KEY;
+// const secretKey = "c8c3a8b1d1e04ef2a899e8e7a574f40555b62a371bd8f4e9b0a558d599de4fa5";
 
 const verifyToken = (req, res, next) => {
-  // Extract the token from the request header
-  const token = req.headers["authorization"];
+  // Extract the entire authorization header
+  const authHeader = req.headers["authorization"];
 
-  if (!token) {
+  if (!authHeader) {
     return res
       .status(403)
       .json({ success: false, message: "No token provided." });
   }
 
-  // Verify the token
-  jwt.verify(token, secretKey, (err, decoded) => {
-    if (err) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Failed to authenticate token." });
-    }
+  // Check if the header starts with "Bearer "
+  if (authHeader.startsWith("Bearer ")) {
+    // Remove "Bearer " to extract the actual token
+    const token = authHeader.substring(7);
 
-    // Save the decoded user information for further use in the request
-    req.user = decoded;
+    // Verify the token
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Failed to authenticate token." });
+      }
 
-    // Call next to pass control to the next middleware or route handler
-    next();
-  });
+      // Save the decoded user information for further use in the request
+      req.user = decoded;
+      next();
+    });
+  } else {
+    return res
+      .status(401)
+      .json({
+        success: false,
+        message: 'Invalid token format. It should start with "Bearer "',
+      });
+  }
 };
 
 function generateToken(userId, email) {

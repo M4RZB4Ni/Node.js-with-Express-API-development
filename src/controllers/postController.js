@@ -1,14 +1,12 @@
-const { makeGraphQLRequest } = require('../utils/graphqlRequests');
-const { verifyToken } = require('../middleware/authentication');
 const { createPostService, getUserPostsService, updatePostService, deletePostByIdService } = require('../services/postService');
+const { sendEmailNotification } = require('../services/emailService');
 
 const createPost = async (req, res) =>
 {
   try
   {
     // Extracted user_id from token
-    const { user_id } = req.user;
-
+    const { user_id, email } = req.user;
     // Extract post data from request body
     const { title, content } = req.body;
 
@@ -35,6 +33,7 @@ const createPost = async (req, res) =>
         title: post.title,
         content: post.content,
       };
+      sendEmailNotification(email, post.post_id);
       return res.json(response);
     }
 

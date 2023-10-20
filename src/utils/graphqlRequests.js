@@ -4,14 +4,14 @@ const makeGraphQLRequest = async (query, operationName, variables) =>
     try
     {
 
-        const response = await axios.post('https://moving-collie-31.hasura.app/v1/graphql', {
+        const response = await axios.post(process.env.HASURA_URL, {
             query,
             operationName,
             variables
         },
             {
                 headers: {
-                    'x-hasura-admin-secret': `Vahfc1kHrNTfqlci0NRLFShisZ32PhPyPCp9n4sPBKqVL1ycMV1ogyBANLTWSglA`
+                    'x-hasura-admin-secret': process.env.HASURA_SECRET
                 }
             });
         console.log(response);

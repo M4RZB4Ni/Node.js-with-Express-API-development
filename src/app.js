@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { verifyToken } = require('./middleware/authentication');
+const { verifyRegister, verifyLogin } = require('./middleware/validation');
 const { createPost, getUserPosts, editPost, deletePost } = require('./controllers/postController');
 const { registerUser, loginUser } = require('./controllers/authController');
 
@@ -9,8 +10,9 @@ app.use(bodyParser.json());
 
 
 // Register and login routes
-app.post('/api/register', registerUser);
-app.post('/api/login', loginUser);
+app.post('/api/login', verifyLogin, loginUser);
+app.post('/api/register', verifyRegister, registerUser);
+
 app.use(verifyToken);
 
 // Blog post routes (protected with token verification)

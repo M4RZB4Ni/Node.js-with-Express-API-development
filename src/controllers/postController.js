@@ -6,27 +6,9 @@ const {
 } = require('../services/postService');
 const { sendEmailNotification } = require('../services/emailService');
 const { AppError } = require('../utils/appError');
+const { handleServiceResponse } = require('../middleware/responseHandler');
 
-const handleServiceResponse = (res, serviceResult, successStatus = 200) =>
-{
-  if (serviceResult.errors)
-  {
-    // Handle GraphQL errors
-    console.error('GraphQL errors:', serviceResult.errors);
-    throw new AppError(serviceResult.errors[0].message, 500);
-  }
 
-  if (serviceResult.data)
-  {
-    if (res)
-    {
-      res.status(successStatus).json(serviceResult.data);
-    }
-    return serviceResult.data;
-  }
-
-  throw new AppError('Operation failed.', 500);
-};
 
 const createPost = async (req, res, next) =>
 {
@@ -45,8 +27,7 @@ const createPost = async (req, res, next) =>
 
     sendEmailNotification(email, post.post_id);
 
-    res.status(200).json({
-      success: true,
+    return handleServiceResponse(res, {
       post_id: post.post_id,
       title: post.title,
       content: post.content,

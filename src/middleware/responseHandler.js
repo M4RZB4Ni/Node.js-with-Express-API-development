@@ -13,14 +13,29 @@ const errorHandler = (err, req, res, next) =>
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
 };
-const sendSuccessResponse = (res, data) =>
+const handleServiceResponse = (res, serviceResult, successStatus = 200) =>
 {
-    return res.status(200).json({
-        success: true,
-        data,
-    });
-};
+    if (serviceResult.errors)
+    {
+        // Handle GraphQL errors
+        console.error('GraphQL errors:', serviceResult.errors);
+        throw new AppError(serviceResult.errors[0].message, 500);
+    }
 
+    // if (serviceResult.data)
+    // {
+    if (res)
+    {
+        res.status(successStatus).json({
+            status: 'success',
+            response: serviceResult,
+        });
+    }
+    return serviceResult.data;
+    // }
+
+    throw new AppError('Operation failed.', 500);
+};
 const handleGraphQLErrors = (errors, next) =>
 {
     console.error('GraphQL errors:', errors);
@@ -30,6 +45,6 @@ const handleGraphQLErrors = (errors, next) =>
 
 module.exports = {
     errorHandler,
-    sendSuccessResponse,
+    handleServiceResponse,
     handleGraphQLErrors
 };

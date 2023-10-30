@@ -4,6 +4,7 @@ const { createPost, getUserPosts, editPost, deletePost } = require('../controlle
 const express = require('express');
 const router = express.Router();
 
+router.use(verifyToken);
 
 // Blog post routes (protected with token verification)
 router.post('/create', verifyToken, createPost);

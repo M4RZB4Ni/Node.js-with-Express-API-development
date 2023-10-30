@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { errorHandler, sendSuccessResponse } = require('./middleware/responseHandler');
+const { errorHandler, handleServiceResponse } = require('./middleware/responseHandler');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/postRoutes');
 
@@ -15,7 +15,7 @@ app.use('/api/blog', blogRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.use(errorHandler);
-app.use(sendSuccessResponse);
+app.use(handleServiceResponse);
 
 app.listen(PORT, () =>
 {

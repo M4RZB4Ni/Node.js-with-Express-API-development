@@ -1,3 +1,5 @@
+const { AppError } = require('../utils/appError');
+
 // Error handling middleware function
 const errorHandler = (err, req, res, next) =>
 {
@@ -19,8 +21,15 @@ const sendSuccessResponse = (res, data) =>
     });
 };
 
+const handleGraphQLErrors = (errors, next) =>
+{
+    console.error('GraphQL errors:', errors);
+    return next(new AppError(errors[0].message, 500));
+};
+
 
 module.exports = {
     errorHandler,
-    sendSuccessResponse
+    sendSuccessResponse,
+    handleGraphQLErrors
 };

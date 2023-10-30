@@ -1,104 +1,78 @@
 const { hashPassword, comparePassword } = require('../utils/hashHelper');
 const { createUser, loginUserQuery } = require('../services/userService');
 const { generateToken } = require('../middleware/authentication');
+const { handleGraphQLErrors } = require('../middleware/responseHandler'); // Import from the response handler file
+
 const { AppError } = require('../utils/appError');
 
 const registerUser = async (req, res, next) =>
 {
     try
     {
-        const { userName: username, userMail: email, password } = req.body;
+        const { username, email, password } = req.body;
 
         if (!username || !email || !password)
         {
-            next(new AppError('Please provide username, email, and password.', 500));
-
+            return next(new AppError('Please provide username, email, and password.', 400));
         }
 
         const hashedPassword = await hashPassword(password);
-
         const userCreationResult = await createUser(username, email, hashedPassword);
 
         if (userCreationResult.errors)
         {
-            // Handle GraphQL errors
-            console.error('GraphQL errors:', userCreationResult.errors);
-            next(new AppError(userCreationResult.errors[0].message, 500));
+            return handleGraphQLErrors(userCreationResult.errors, next);
         }
 
-        if (userCreationResult.data)
-        {
-            const user = userCreationResult.data.insert_User.returning[0];
-            const userResponse = {
-                user_id: user.user_id,
-                username: user.username,
-                email: user.email,
-                success: true,
-            };
-            return res.status(200).json(userResponse);
-        }
-
+        const user = userCreationResult.data.insert_User.returning[0];
+        const userResponse = {
+            user_id: user.user_id,
+            username: user.username,
+            email: user.email,
+            success: true,
+        };
+        return res.status(200).json(userResponse);
     } catch (error)
     {
         console.error('Error registering user:', error);
-        next(new AppError('Error registering user.', 500));
-
+        next(new AppError(`Error registering user. ${error}`, 500));
     }
 };
 
-
-
-
-
-const loginUser = async (req, res,next) =>
+const loginUser = async (req, res, next) =>
 {
     try
     {
-        // Extract email and password from request body
         const { email, password } = req.body;
 
-        // Check if required fields are provided
         if (!email || !password)
         {
-            next(new AppError('Please provide email and password.', 400));
-
+            return next(new AppError('Please provide email and password.', 400));
         }
 
         const userLoginRespose = await loginUserQuery(email);
 
         if (userLoginRespose.errors)
         {
-            // Handle GraphQL errors
-            console.error('GraphQL errors:', userLoginRespose.error);
-            next(new AppError(userLoginRespose.errors[0].message, 500));
-
-
+            return handleGraphQLErrors(userLoginRespose.errors, next);
         }
 
-        if (userLoginRespose.data)
+        const user = userLoginRespose.data.User[0];
+        if (!user)
         {
-            const userStoredPass = userLoginRespose.data.User[0].password;
-
-            console.log('GraphQL user:', userStoredPass);
-
-
-            const passwordMatch = await comparePassword(password, userStoredPass);
-
-            if (passwordMatch)
-            {
-                // Passwords match, generate a JWT token (you need to implement this function)
-                console.log('');
-                const token = generateToken(userLoginRespose.data.User[0].user_id, email); // Assuming you have a function to generate JWT tokens
-
-                return res.json({ success: true, token });
-            } else
-            {
-                next(new AppError('Invalid email or password.', 401));
-
-            }
-
+            return next(new AppError('Invalid email or password.', 401));
         }
 
+        const passwordMatch = await comparePassword(password, user.password);
+
+        if (passwordMatch)
+        {
+            const token = generateToken(user.user_id, email);
+            return res.json({ success: true, token });
+        } else
+        {
+            return next(new AppError('Invalid email or password.', 401));
+        }
     } catch (error)
     {
         console.error('Error logging in:', error);
@@ -106,7 +80,8 @@ const loginUser = async (req, res,next) =>
     }
 };
 
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
 };

@@ -2,7 +2,7 @@ const { createPostService, getUserPostsService, updatePostService, deletePostByI
 const { sendEmailNotification } = require('../services/emailService');
 const { AppError } = require('../utils/appError');
 
-const createPost = async (req, res) =>
+const createPost = async (req, res,next) =>
 {
   try
   {
@@ -47,7 +47,7 @@ const createPost = async (req, res) =>
   }
 };
 
-const getUserPosts = async (req, res) =>
+const getUserPosts = async (req, res,next) =>
 {
   try
   {
@@ -87,7 +87,7 @@ const getUserPosts = async (req, res) =>
   }
 };
 
-const editPost = async (req, res) =>
+const editPost = async (req, res,next) =>
 {
   try
   {
@@ -128,7 +128,7 @@ const editPost = async (req, res) =>
   }
 };
 
-const deletePost = async (req, res) =>
+const deletePost = async (req, res,next) =>
 {
   try
   {

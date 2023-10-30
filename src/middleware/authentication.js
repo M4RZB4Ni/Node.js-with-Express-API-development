@@ -3,8 +3,6 @@ require("dotenv").config();
 const { AppError } = require('../utils/appError');
 
 const secretKey = process.env.AUTH_SECRET_KEY;
-// const secretKey =
-//   "c8c3a8b1d1e04ef2a899e8e7a574f40555b62a371bd8f4e9b0a558d599de4fa5";
 
 const verifyToken = (req, res, next) =>
 {

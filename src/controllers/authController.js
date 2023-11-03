@@ -4,7 +4,7 @@ const { generateToken } = require('../middleware/authentication');
 const { handleGraphQLErrors } = require('../middleware/responseHandler'); // Import from the response handler file
 
 const { AppError } = require('../utils/appError');
-const { handleServiceResponse } = require('../middleware/responseHandler');
+// const { handleServiceResponse } = require('../middleware/responseHandler');
 const registerUser = async (req, res, next) =>
 {
     try
@@ -32,9 +32,9 @@ const registerUser = async (req, res, next) =>
             success: true,
         };
         // Inside the controller functions
-        return handleServiceResponse(res, userResponse);
+        // handleServiceResponse(res, userResponse);
 
-        // return res.status(200).json(userResponse);
+        return res.status(200).json(userResponse);
     } catch (error)
     {
         console.error('Error registering user:', error);
@@ -71,7 +71,9 @@ const loginUser = async (req, res, next) =>
         if (passwordMatch)
         {
             const token = generateToken(user.user_id, email);
-            return handleServiceResponse(res, token);
+            return res.json({ success: true, token });
+
+            // handleServiceResponse(res, token);
         } else
         {
             return next(new AppError('Invalid email or password.', 401));

@@ -15,7 +15,7 @@ app.use('/api/blog', blogRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.use(errorHandler);
-app.use(handleServiceResponse);
+// app.use(handleServiceResponse);
 
 app.listen(PORT, () =>
 {

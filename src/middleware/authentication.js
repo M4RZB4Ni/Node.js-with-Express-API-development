@@ -1,4 +1,8 @@
 const jwt = require("jsonwebtoken");
+const passport = require('passport');
+
+const BearerStrategy = require("passport-http-bearer").Strategy;
+
 require("dotenv").config();
 const { AppError } = require('../utils/appError');
 
@@ -53,8 +57,43 @@ function generateToken(userId, email)
 
   return token;
 }
+passport.use(new BearerStrategy(
+  function (token, done)
+  {
+    try
+    {
+
+      // Verify the token
+      jwt.verify(token, secretKey, (err, decoded) =>
+      {
+        if (err)
+        {
+          console.log(`we have error--> ${err}`);
+          // next(new AppError("Failed to authenticate token.", 401));
+          return done(new AppError("Failed to authenticate token.", 401));
+        }
+
+        // Save the decoded user information for further use in the request
+        // req.user = decoded;
+        return done(null, decoded, { scope: 'all' });
+        // next();
+      });
+
+
+    } catch (err)
+    {
+      console.log(`we have catch error--> ${err}`);
+
+      return done(err);
+
+    }
+  }
+));
+
 
 module.exports = {
+  initialize: passport.initialize(),
+  authentication: passport.authenticate('bearer', { session: false }),
   verifyToken,
   generateToken,
 };

@@ -13,6 +13,7 @@ const errorHandler = (err, req, res, next) =>
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
 };
+
 const handleServiceResponse = (res, serviceResult, successStatus = 200) =>
 {
     if (serviceResult.errors)
@@ -26,7 +27,7 @@ const handleServiceResponse = (res, serviceResult, successStatus = 200) =>
     // {
     if (res)
     {
-        res.status(successStatus).json({
+        return res.status(successStatus).json({
             status: 'success',
             response: serviceResult,
         });

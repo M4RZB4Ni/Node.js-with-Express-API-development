@@ -1,16 +1,16 @@
-const { verifyToken } = require('../middleware/authentication');
+const auth = require('../middleware/authentication');
 const { createPost, getUserPosts, editPost, deletePost } = require('../controllers/postController');
 
 const express = require('express');
 const router = express.Router();
 
-router.use(verifyToken);
+router.use(auth.initialize);
 
 // Blog post routes (protected with token verification)
-router.post('/create', verifyToken, createPost);
-router.get('/getAll', verifyToken, getUserPosts);
-router.put('/:post_id/edit', verifyToken, editPost);
-router.delete('/:post_id/delete', verifyToken, deletePost);
+router.post('/create', auth.authentication, createPost);
+router.get('/getAll', auth.authentication, getUserPosts);
+router.put('/:post_id/edit', auth.authentication, editPost);
+router.delete('/:post_id/delete', auth.authentication, deletePost);
 
 
 module.exports = router;

@@ -71,7 +71,7 @@ const loginUser = async (req, res, next) =>
         if (passwordMatch)
         {
             const token = generateToken(user.user_id, email);
-            return res.json({ success: true, token });
+            return res.json({ success: true, response:token });
 
             // handleServiceResponse(res, token);
         } else

@@ -10,7 +10,6 @@ const errorHandler = (err, req, res, next) =>
     }
 
     // For unexpected errors, log the error and return a 500 Internal Server Error response
-    console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
 };
 
@@ -19,7 +18,6 @@ const handleServiceResponse = (res, serviceResult, successStatus = 200) =>
     if (serviceResult.errors)
     {
         // Handle GraphQL errors
-        console.error('GraphQL errors:', serviceResult.errors);
         throw new AppError(serviceResult.errors[0].message, 500);
     }
 
@@ -39,7 +37,6 @@ const handleServiceResponse = (res, serviceResult, successStatus = 200) =>
 };
 const handleGraphQLErrors = (errors, next) =>
 {
-    console.error('GraphQL errors:', errors);
     return next(new AppError(errors[0].message, 500));
 };
 

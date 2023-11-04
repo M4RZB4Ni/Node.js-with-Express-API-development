@@ -1,8 +1,11 @@
 const express = require('express');
+const config = require('./server/config/index.js')[process.env.NODE_ENV];
 const bodyParser = require('body-parser');
 const { errorHandler, handleServiceResponse } = require('./middleware/responseHandler');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/postRoutes');
+
+const log = config.log();
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,5 +22,5 @@ app.use(errorHandler);
 
 app.listen(PORT, () =>
 {
-  console.log(`Server is running on port ${PORT}`);
+  log.info(`Server is running on port ${PORT}`);
 });

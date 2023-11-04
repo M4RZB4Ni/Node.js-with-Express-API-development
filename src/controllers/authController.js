@@ -37,7 +37,6 @@ const registerUser = async (req, res, next) =>
         return res.status(200).json(userResponse);
     } catch (error)
     {
-        console.error('Error registering user:', error);
         next(new AppError(`Error registering user. ${error}`, 500));
     }
 };
@@ -80,7 +79,6 @@ const loginUser = async (req, res, next) =>
         }
     } catch (error)
     {
-        console.error('Error logging in:', error);
         next(new AppError('Error logging in.', 500));
     }
 };

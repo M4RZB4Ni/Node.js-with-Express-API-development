@@ -17,11 +17,9 @@ const makeGraphQLRequest = async (query, operationName, variables) =>
                     'x-hasura-admin-secret': process.env.HASURA_SECRET
                 }
             });
-        console.log(response);
         return response.data;
     } catch (error)
     {
-        console.error('Error making GraphQL request:', error);
         throw new AppError('Error making GraphQL request', 500);
 
     }

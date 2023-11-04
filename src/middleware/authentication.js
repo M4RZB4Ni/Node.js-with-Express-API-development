@@ -68,7 +68,6 @@ passport.use(new BearerStrategy(
       {
         if (err)
         {
-          console.log(`we have error--> ${err}`);
           // next(new AppError("Failed to authenticate token.", 401));
           return done(new AppError("Failed to authenticate token.", 401));
         }
@@ -82,7 +81,6 @@ passport.use(new BearerStrategy(
 
     } catch (err)
     {
-      console.log(`we have catch error--> ${err}`);
 
       return done(err);
 

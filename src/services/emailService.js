@@ -10,7 +10,6 @@ I had to use google that it seems google changed own policies and does not work 
 const sendEmailNotification = (email, postId) =>
 {
 
-    console.log(`EMAIL SENDER IS->${process.env.MAIL_ADDRESS}`);
     // Create a Nodemailer transporter with your Gmail account
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -33,10 +32,10 @@ const sendEmailNotification = (email, postId) =>
     {
         if (error)
         {
-            console.error('Error sending email: ', error);
+            // console.error('Error sending email: ', error);
         } else
         {
-            console.log('Email sent: ', info.response);
+            // console.log('Email sent: ', info.response);
         }
     });
 

@@ -21,7 +21,6 @@ const createPost = async (req, res,next) =>
     if (postCreationResult.errors)
     {
       // Handle GraphQL errors
-      console.error('GraphQL errors:', postCreationResult.errors);
       next(new AppError(postCreationResult.errors[0].message, 500));
 
     }
@@ -42,7 +41,6 @@ const createPost = async (req, res,next) =>
 
   } catch (error)
   {
-    console.error('Error creating post:', error);
     next(new AppError('Error creating post.', 500));
   }
 };
@@ -82,7 +80,6 @@ const getUserPosts = async (req, res,next) =>
 
   } catch (error)
   {
-    console.error('Error fetching user posts:', error);
     next(new AppError('Error fetching user posts.', 500));
   }
 };
@@ -112,7 +109,6 @@ const editPost = async (req, res,next) =>
     if (result.errors)
     {
       // Handle GraphQL errors
-      console.error('GraphQL errors:', result.errors);
       next(new AppError(result.errors[0].message, 500));
     }
 
@@ -123,7 +119,6 @@ const editPost = async (req, res,next) =>
 
   } catch (error)
   {
-    console.error('Error editing post:', error);
     next(new AppError('Error editing post.', 500));
   }
 };
@@ -150,7 +145,6 @@ const deletePost = async (req, res,next) =>
     if (result.errors)
     {
       // Handle GraphQL errors
-      console.error('GraphQL errors:', result.errors);
       next(new AppError(result.errors[0].message, 500));
     }
 
@@ -161,7 +155,6 @@ const deletePost = async (req, res,next) =>
 
   } catch (error)
   {
-    console.error('Error deleting post:', error);
     next(new AppError('Error deleting post.', 500));
   }
 };

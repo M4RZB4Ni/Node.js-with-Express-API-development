@@ -1,10 +1,11 @@
 const express = require('express');
 const helmet = require("helmet");
-const config = require('./server/config/index.js')[process.env.NODE_ENV];
+const config = require('./server/config/index.js')[process.env.NODE_ENV || 'development'];
 const bodyParser = require('body-parser');
 const { errorHandler, handleServiceResponse } = require('./middleware/responseHandler');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/postRoutes');
+const { development } = require('./server/config/index.js');
 
 const log = config.log();
 

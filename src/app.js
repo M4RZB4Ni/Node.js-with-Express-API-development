@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require("helmet");
 const config = require('./server/config/index.js')[process.env.NODE_ENV];
 const bodyParser = require('body-parser');
 const { errorHandler, handleServiceResponse } = require('./middleware/responseHandler');
@@ -8,6 +9,7 @@ const blogRoutes = require('./routes/postRoutes');
 const log = config.log();
 
 const app = express();
+app.use(helmet());
 app.use(bodyParser.json());
 
 
